@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+      <style>
+         @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+         :root {
+         --bgprm: #007bff;
+         --bgfont: white;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         font-family: "Roboto", sans-serif;
+         box-sizing: border-box;
+         }
+         html {
+         max-width: 100%;
+         }
+         body {
+         font-family: "Roboto", sans-serif;
+         color: black;
+         }
+         .quizbody {
+         background-color: var(--bgfont);
+         }
+         .btn {
+         --c: var(--bgprm);
+         color: var(--c);
+         font-size: 16px;
+         border: 0.2em solid var(--c);
+         background: transparent;
+         text-transform: uppercase;
+         font-weight: bold;
+         letter-spacing: 0.1em;
+         text-align: center;
+         position: relative;
+         overflow: hidden;
+         z-index: 1;
+         padding: 10px 30px;
+         transition: 0.5s;
+         }
+         .btn span {
+         position: absolute;
+         width: 25%;
+         height: 100%;
+         background-color: var(--c);
+         transform: translateY(150%);
+         border-radius: 50%;
+         left: calc((var(--n) - 1) * 25%);
+         transition: 0.5s;
+         transition-delay: calc((var(--n) - 1) * 0.1s);
+         z-index: -1;
+         }
+         .btn:hover {
+         color: var(--bgfont);
+         text-align: left;
+         }
+         .btn:hover span {
+         transform: translateY(0) scale(2);
+         }
+         .btn span:nth-child(1) {
+         --n: 1;
+         }
+         .btn span:nth-child(2) {
+         --n: 2;
+         }
+         .btn span:nth-child(3) {
+         --n: 3;
+         }
+         .btn span:nth-child(4) {
+         --n: 4;
+         }
+         #mainButton {
+         font-size: 20px;
+         padding: 16px 100px;
+         }
+         .btn:focus {
+         box-shadow: none;
+         }
+         .btn:focus span {
+         transform: translateY(150%);
+         }
+         .button-div {
+         padding: 150px 0;
+         }
+         .bgblue {
+         background-color: var(--bgprm);
+         }
+         .info_box {
+         width: 540px;
+         background: var(--bgprm);
+         border-radius: 5px;
+         margin-top: 20px;
+         transition: all 0.3s ease;
+         color: var(--bgfont);
+         }
+         .info-title {
+         height: 60px;
+         width: 100%;
+         border-bottom: 1px solid lightgrey;
+         display: flex;
+         align-items: center;
+         padding: 0 30px;
+         border-radius: 5px 5px 0 0;
+         font-size: 25px;
+         font-weight: 600;
+         }
+         .info-list {
+         padding: 15px 30px;
+         }
+         .info {
+         margin: 5px 0;
+         font-size: 17px;
+         }
+         .info span {
+         font-weight: 700;
+         color: lightgray;
+         }
+         .buttons {
+         height: 60px;
+         display: flex;
+         align-items: center;
+         justify-content: flex-end;
+         padding: 0 20px;
+         border-top: 1px solid lightgrey;
+         }
+         .buttons button {
+         margin: 0 5px;
+         font-size: 16px;
+         font-weight: 500;
+         cursor: pointer !important;
+         border-radius: 5px;
+         transition: all 0.3s ease;
+         color: var(--bgprm);
+         background-color: var(--bgfont);
+         padding: 10px 15px;
+         }
+         .buttons button:hover {
+         color: #007bff;
+         transform: scale(1.05);
+         }
+         .info_box {
+         display: none;
+         }
+         .containerr {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         }
+         [type="radio"] {
+         z-index: -1;
+         position: absolute;
+         opacity: 0;
+         }
+         [type="radio"]:checked ~ label {
+         border-color: var(--bgprm);
+         background-color: rgba(97, 154, 234, 0.16);
+         color: var(--bgprm);
+         }
+         [type="radio"]:checked ~ label:before {
+         will-change: transform, border-width, border-color;
+         -webkit-animation: bubble 1s ease-in;
+         animation: bubble 1s ease-in;
+         }
+         [type="radio"]:checked ~ label:after {
+         will-change: opacity, box-shadow;
+         -webkit-animation: sparkles 700ms ease-in-out;
+         animation: sparkles 700ms ease-in-out;
+         }
+         [type="radio"]:checked ~ label > span {
+         will-change: transform;
+         border: 0;
+         background-image: linear-gradient(to top right, var(--bgprm), #4363ee);
+         -webkit-animation: radio 400ms cubic-bezier(0.17, 0.89, 0.32, 1.49);
+         animation: radio 400ms cubic-bezier(0.17, 0.89, 0.32, 1.49);
+         }
+         [type="radio"]:checked ~ label > span:after {
+         content: "";
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         width: 6px;
+         height: 6px;
+         border-radius: 10px;
+         background-color: #fff;
+         }
+         label {
+         position: relative;
+         display: grid;
+         align-items: center;
+         grid-template-columns: 100px 10 10px;
+         grid-gap: 20px;
+         width: 310px;
+         height: 50px;
+         padding: 0 20px;
+         border-radius: 30px;
+         border: 1px solid var(--bgprm);
+         cursor: pointer;
+         background-color: transparent;
+         transition: all 300ms ease-in;
+         }
+         label:hover {
+         border-color: #4062f6;
+         background-color: rgba(97, 154, 234, 0.16);
+         }
+         label:before,
+         label:after {
+         position: absolute;
+         left: 29px;
+         border-radius: 50%;
+         content: "";
+         }
+         label:before {
+         margin: -2rem;
+         border: solid 2rem #545461;
+         width: 4rem;
+         height: 4rem;
+         transform: scale(0);
+         }
+         label:after {
+         margin: -0.1875rem;
+         width: 0.375rem;
+         height: 0.375rem;
+         box-shadow: 0.32476rem -2.6875rem 0 -0.1875rem #ff8080,
+         -0.32476rem -2.3125rem 0 -0.1875rem #ffed80,
+         2.30366rem -1.42172rem 0 -0.1875rem #ffed80,
+         1.6055rem -1.69573rem 0 -0.1875rem #a4ff80,
+         2.54785rem 0.91464rem 0 -0.1875rem #a4ff80,
+         2.32679rem 0.19796rem 0 -0.1875rem #80ffc8,
+         0.87346rem 2.56226rem 0 -0.1875rem #80ffc8,
+         1.29595rem 1.94258rem 0 -0.1875rem #80c8ff,
+         -1.45866rem 2.28045rem 0 -0.1875rem #80c8ff,
+         -0.71076rem 2.2244rem 0 -0.1875rem #a480ff,
+         -2.69238rem 0.28141rem 0 -0.1875rem #a480ff,
+         -2.18226rem 0.8312rem 0 -0.1875rem #ff80ed,
+         -1.89869rem -1.92954rem 0 -0.1875rem #ff80ed,
+         -2.01047rem -1.18791rem 0 -0.1875rem #ff8080;
+         }
+         label > span {
+         position: relative;
+         display: inline-flex;
+         width: 20px;
+         height: 20px;
+         border-radius: 20px;
+         border: 2px solid #454861;
+         background-image: linear-gradient(to bottom, #3b4059, #1c1e2d);
+         }
+         .option:not(:last-child) {
+         margin-bottom: 4px;
+         }
+         @keyframes radio {
+         0%,
+         17.5% {
+         transform: scale(0);
+         }
+         }
+         @keyframes bubble {
+         15% {
+         transform: scale(1);
+         border-color: #545461;
+         border-width: 1rem;
+         }
+         30%,
+         100% {
+         transform: scale(1);
+         border-color: #545461;
+         border-width: 0;
+         }
+         }
+         @keyframes sparkles {
+         0%,
+         10% {
+         opacity: 0;
+         transform: scale(0);
+         }
+         15% {
+         opacity: 1;
+         transform: scale(1.2) rotate(-20deg);
+         box-shadow: 0.32476rem -2.1875rem 0 0rem #ff8080,
+         -0.32476rem -1.8125rem 0 0rem #ffed80,
+         1.91274rem -1.10998rem 0 0rem #ffed80,
+         1.21459rem -1.38398rem 0 0rem #a4ff80,
+         2.06039rem 0.80338rem 0 0rem #a4ff80, 1.83932rem 0.0867rem 0 0rem #80ffc8,
+         0.65652rem 2.11178rem 0 0rem #80ffc8, 1.07901rem 1.4921rem 0 0rem #80c8ff,
+         -1.24172rem 1.82996rem 0 0rem #80c8ff,
+         -0.49382rem 1.77391rem 0 0rem #a480ff,
+         -2.20492rem 0.17015rem 0 0rem #a480ff,
+         -1.69479rem 0.71994rem 0 0rem #ff80ed,
+         -1.50777rem -1.61779rem 0 0rem #ff80ed,
+         -1.61955rem -0.87617rem 0 0rem #ff8080;
+         }
+         }
+         .quiz_box,
+         .result_box {
+         margin: 60px 0;
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+         }
+         .quiz_box,
+         .result_box {
+         width: 550px;
+         background: #fff;
+         border-radius: 5px;
+         transition: all 0.3s ease;
+         }
+         .quiz_box header,
+         .result_box header {
+         position: relative;
+         z-index: 2;
+         height: 70px;
+         padding: 0 30px;
+         background: #fff;
+         border-radius: 5px 5px 0 0;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.1);
+         }
+         .quiz_box header .title {
+         font-size: 20px;
+         font-weight: 600;
+         }
+         .timer {
+         color: #081e35;
+         background: #83a5c9;
+         height: 45px;
+         padding: 0 8px;
+         border-radius: 30px;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         width: 145px;
+         }
+         .time_left_txt {
+         font-weight: 400;
+         font-size: 17px;
+         user-select: none;
+         }
+         .timer_sec {
+         font-size: 18px;
+         font-weight: 500;
+         height: 30px;
+         width: 45px;
+         color: #fff;
+         border-radius: 30px;
+         line-height: 30px;
+         text-align: center;
+         background: #0c86ff;
+         user-select: none;
+         }
+         .time_line {
+         position: absolute;
+         bottom: 0px;
+         left: 0px;
+         height: 3px;
+         width: 100%;
+         transition: width 1s linear;
+         background: #007bff;
+         }
+         .qasection {
+         padding: 25px 30px 20px 30px;
+         background: #fff;
+         height: 360px;
+         }
+         .que_text {
+         font-size: 25px;
+         font-weight: 600;
+         }
+         .option_list {
+         padding: 20px 0px;
+         }
+         .option_list .option:last-child {
+         margin-bottom: 0px;
+         }
+         footer {
+         height: 60px;
+         padding: 0 30px;
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         border-top: 1px solid lightgrey;
+         padding-right: 10px;
+         }
+         .total_que span {
+         user-select: none;
+         }
+         .total_que span p {
+         font-weight: 500;
+         padding: 0 5px;
+         }
+         .total_que span p:first-child {
+         padding-left: 0px;
+         }
+         .btns button:hover {
+         color: var(--bgprm);
+         }
+         .questionbody {
+         display: none;
+         }
+         /* .total_que {
+         display: flex;
+         } */
+         .pointerNone {
+         pointer-events: none;
+         }
+         .btns > button.btn.active {
+         border-color: black;
+         color: black;
+         }
+         .disable {
+         pointer-events: none;
+         border-color: #545461;
+         color: #545461;
+         }
+         .result {
+         display: none;
+         }
+         section.result-showing-box {
+         padding: 32px 20px;
+         }
+         .perc-line-div,
+         .time-line-div {
+         height: 5px;
+         background: aliceblue;
+         border-radius: 30px;
+         }
+         .perc-line,
+         .time-line {
+         height: 5px;
+         background-color: #007bff;
+         width: 100%;
+         border-radius: 29px;
+         }
+         .time-result,
+         .perc-result {
+         margin-top: 16px;
+         }
+         p.icons-text.mb-0 {
+         font-size: 23px;
+         font-weight: 700;
+         margin-bottom: 10px;
+         }
+         .icons i {
+         font-size: 32px;
+         color: cornflowerblue;
+         padding-right: 10px;
+         padding-top: 10px;
+         cursor: pointer;
+         }
+         .icons i:hover {
+         color: #007bff;
+         }
+         .icons {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         }
+         .resultbody {
+         display: none;
+         }
+      </style>
+      <script type="text/javascript">
+         $(document).ready(function () {
+         let quizJSON=[
+          {
+              "title":"When did the programming language C++ came out?",
+              "choices":[
+                  1997,
+                  1995,
+                  2000,
+                  1998
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"When Node.js came out?",
+              "choices":[
+                  2010,
+                  2011,
+                  2009,
+                  2006
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"What brand of laptop do I have?",
+              "choices":[
+                  "HP",
+                  "Acer",
+                  "Dell",
+                  "Lenovo"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How old am I?",
+              "choices":[
+                  12,
+                  20,
+                  9,
+                  16
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How old is Google?",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"	Grand Central Terminal, Park Avenue, New York is the world's?",
+              "choices":[
+                 "Central park",
+                  "Central Gym",
+                  "Central Class",
+                  "Central Bus"
+              ],
+              "correctAnswer":1,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Divide 10 by half and add ten?",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          }
+           ,
+          {
+              "title":"Divide 50 by half and add ten?",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Divide 20 by half and add ten?",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Divide 30 by half and add ten?",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":1,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How many months have 28 days?",
+              "choices":[
+                  1,
+                  2,
+                  "All of them",
+                  "Depends if there's a leap year or not."
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"The answer is really big.",
+              "choices":[
+                  
+               "THE ANSWER",
+                  "Really big",
+                  "An elephant",
+                  "The data given is insufficient"
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Potato was introduced to Europe by?",
+              "choices":[
+                  "Dutch",
+                  "Germans",
+                  "Germans",
+                  "Portuguese"
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Private Sector Mutual Funds in Pakistan were permitted in the year:",
+              "choices":[
+                  1964,
+                  1993,
+                  1994,
+                  2001
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"The 17th Asian Games were held in?",
+              "choices":[
+                  2018,
+                  2014,
+                  2016,
+                  2015
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Who is the Author of “The Myth of independence”?",
+              "choices":[
+                  "Zulfikar Ali Bhutto",
+                  "Aysha Jalal",
+                  "I.H. Qureshi",
+                  "Shahid Rafique"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How many sports were played in summer Olympic 2016?",
+              "choices":[
+                  40,
+                  24,
+                  34,
+                  16
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How many Sports were in Winter Olympic 2018?",
+              "choices":[
+                  "9 Sports",
+                  "12 Sports",
+                  "7 Sports",
+                  "19 Sports"
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Ryanair airline belongs to which Country?",
+              "choices":[
+                  "Finland",
+                  "Switzerland",
+                  "Ireland",
+                  "Tajikistan"
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Easyjet airline belongs to which Country?",
+              "choices":[
+                  "Germany",
+                  "France",
+                  "England",
+                  "Australia"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Divide 100 by half and add ten.",
+              "choices":[
+                  12,
+                  20,
+                  18,
+                  16
+              ],
+              "correctAnswer":1,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Braathens airline belong to which Country?",
+              "choices":[
+                  "Swedon",
+                  "Uraguay",
+                  "Iceland",
+                  "Norway"
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Iberia Airline belong to which Country?",
+              "choices":[
+                  "Serbia",
+                  "Poland",
+                  "Latvia",
+                  "Spain"
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Katla Volcano located in which country?",
+              "choices":[
+                  "Sawaziland",
+                  "Finiland",
+                  "England",
+                  "Iceland"
+              ],
+              "correctAnswer":2,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title": "What is always coming, but never arrives?",
+              "choices":[
+                  "Tomorrow",
+                  "Today",
+                  "Yesterday",
+                  "Day"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"What can be broken, but is never held?",
+              "choices":[
+                  "Gold",
+                  "Pores",
+                  "Wood",
+                  "Promise"
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"What can one catch that is not thrown?",
+              "choices":[
+                  "Cold",
+                  "Fever",
+                  "Fear",
+                  "Nothing"
+              ],
+              "correctAnswer":1,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"What has a head, a tail, but does not have a body?",
+              "choices":[
+                  "Coin",
+                  "Cone",
+                  "Corn",
+                  "Chair"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"How many Questions you Answered?",
+              "choices":[
+                  12,
+                  20,
+                  11,
+                  "Not Present"
+              ],
+              "correctAnswer":3,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          },
+          {
+              "title":"Which room has no walls?",
+              "choices":[
+                  "Mushroom",
+                  "Dinning room",
+                  "Grand ROOM",
+                  "Room"
+              ],
+              "correctAnswer":0,
+              "pointerEvents":false,
+              "secondsLeft":20,
+              "AnsweredQue":""
+          }
+         ]
+         quizJSON=JSON.stringify(quizJSON);
+         const quiz=JSON.parse(quizJSON);
+         console.log(quiz);
+         // Json work finished
+         
+         var questionnumber=-1;
+         let scndsLftOfQueArr=[];
+         let radioBtnChecked=[];
+         
+         // Some work for DOM Manipulation start
+         
+         
+          $("#mainButton").click(function(){
+              $(".quizh1").text("Rules");
+              $(".descriptionh3").text("Read the Rules and understand them.");
+              $(this).parent().fadeIn();
+              $(this).parent().parent().remove();
+              $(".info_box").fadeIn();
+         });
+         
+         
+         $(".quit").click(function(){
+          location.reload();
+         });
+         
+         $(".continue").click(function(){
+          $(".quizbody").slideUp(1000);
+          $(".questionbody").fadeIn(1000);
+          questionnumber++;
+          countTotalTime();
+          showquestionnum();
+          showquestion();
+          diablingButtons();
+          saveRadioBtnValue();
+          // startTimeLeft();
+          // checkTODisabelPointer();
+         });
+         
+         $('.btn').on('mouseenter', function () {
+          $(this).addClass('active');
+         });
+         $('.btn').on('mouseleave', function () {
+          $(this).removeClass('active');
+         });
+         function diablingButtons() {
+             if (questionnumber==0) {
+               $(".back").addClass('disable');  
+             }
+             else
+             {
+               $(".back").removeClass('disable');  
+             }
+         }
+         // Some work for DOM Manipulation end
+         
+         //allowing uncheck the radio button -->
+              document.querySelectorAll('input[type=radio][name=option]').forEach((elem) => {
+                  elem.addEventListener('click', allowUncheck);
+                  elem.previous = elem.checked;
+              });
+           
+         
+          function allowUncheck(e) {
+          if (this.previous) {
+              this.checked = false;
+          }
+          document.querySelectorAll(
+              `input[type=radio][name=${this.name}]`).forEach((elem) => {
+              elem.previous = elem.checked;
+          });
+          };
+         //allowing uncheck the radio button <--
+         
+         // starting the quiz's logical work
+         
+         let randomnumber;
+         let randomnumarr=[];
+         let indexpre=randomnumarr[questionnumber];
+         let index =quiz[indexpre];
+         
+         //getting the random number function -->
+              function getrandomnumber(){
+              randomnumber=Math.floor(Math.random()*29)+1;
+              };
+         //getting the random number function <--
+         
+           //checking the Random Number for not getting same number -->
+           function checkRandomNumber() {
+               for (let i = 0; i < 31; i++) {     
+                      getrandomnumber()
+                      let checkRN= jQuery.inArray( randomnumber,  randomnumarr);
+                      if (checkRN==-1) {
+                          randomnumarr[questionnumber]=randomnumber;
+                          break;
+                      }
+                      }
+                      indexpre=randomnumarr[questionnumber];
+                      index =quiz[indexpre]
+           }        
+          //checking the Random Number for not getting same number <--
+         
+         
+          //showing the QUESTIONS function -->
+           function showquestion() {
+               radioButtons = $("input:radio[name='option']");
+               if (questionnumber<randomnumarr.length) {
+                   indexpre=randomnumarr[questionnumber];
+                   index =quiz[indexpre]
+                  $(".que_text").text(index.title);
+                  $("label").eq(0).text(index.choices[0]);
+                  $("label").eq(1).text(index.choices[1]);
+                  $("label").eq(2).text(index.choices[2]);
+                  $("label").eq(3).text(index.choices[3]);
+                  for (var x = 0; x < radioButtons.length; x++) {
+                      var idVal = $(radioButtons[x]).attr("id");
+                      radioBtnCheckedVal=$("label[for='"+idVal+"']").text();
+                      if (radioBtnCheckedVal === radioBtnChecked[questionnumber]) {
+                          radioButtons[x].checked = true;
+                      }
+                      if (radioBtnChecked[questionnumber]===" ") {
+                          radioButtons[x].checked = false;
+                      }
+                  }
+                  if (questionnumber>0) {
+                       resetingTheTime();
+                   }
+                   startTimeLeft();
+              }
+              else
+              {
+                   checkRandomNumber();
+                  $(".que_text").text(index.title);
+                  $("label").eq(0).text(index.choices[0]);
+                  $("label").eq(1).text(index.choices[1]);
+                  $("label").eq(2).text(index.choices[2]);
+                  $("label").eq(3).text(index.choices[3]);
+                  $("input:radio[name='option']").each(function(i) {
+                      this.checked = false;
+                  }); 
+                  console.log(index.correctAnswer);
+                  if (questionnumber>0) {
+                       resetingTheTime();
+                   }
+                   startTimeLeft();
+              } 
+           };
+           //showing the QUESTIONS function <--
+         
+         
+         
+          //  starting the time of question start function-->
+          let secondSetInterval;
+          let width;
+          function startTimeLeft() {
+            secondSetInterval = setInterval(function () {
+                index.secondsLeft-=1;
+                width=(index.secondsLeft/20)*100;
+              //   $(".time_line").css(
+              //       {
+              //           "width":`${width}%`,
+              //           "transition": "width 1s linear"
+              //       }
+              //   )
+                  if (index.secondsLeft<10) {
+                    $(".timer_sec").text("0" + index.secondsLeft);
+                  }
+                  else
+                  {
+                      $(".timer_sec").text(index.secondsLeft); 
+                  }
+                  if (index.secondsLeft==0) {
+                  $(".option_list").addClass("pointerNone");
+                  index.pointerEvents=true;
+                  $(".quiz_box").prepend(`<marquee id="marquee" class="marquee my-2" width="100%" direction="right" height="20px">
+                  You cannot select any option Now.
+                  </marquee>`);
+                  // $(".time_line").hide();
+                  clearInterval(secondSetInterval);
+                  }
+            },1000);
+          };
+          //  starting the time of question end function <--
+         
+         
+          //  resetting the time of question start function -->
+          function resetingTheTime() {
+            clearInterval(secondSetInterval);
+            secondsForTimeOut=index.secondsLeft;
+           scndsLftOfQueArr[questionnumber] = index.secondsLeft;
+            secondCount = index.secondsLeft;
+            $(".timer_sec").text(index.secondsLeft);    
+          };
+          //  resetting  the time of question end function <--
+         
+         
+          //  starting the time of question start function-->
+          let totalSetInterval;
+          let totaltime=0;
+          function countTotalTime() {
+            totalSetInterval = setInterval(function () {
+                totaltime+=1;
+            },1000);
+          };
+          //  starting the time of question end function <--
+         
+         
+          //  calculating the score and storing the checked values in-->
+          let radioBtnCheckedVal;
+          function saveRadioBtnValue() {
+              $("input:radio[name='option']").each(function(i){
+                  if($(this).is(':checked'))
+                  {
+                      var idVal = $(this).attr("id");
+                      radioBtnCheckedVal=$("label[for='"+idVal+"']").text();
+                      return false;
+                  }
+                  else{
+                      radioBtnCheckedVal=" "
+                  }
+              });
+                var userAns = radioBtnCheckedVal;
+              radioBtnChecked[questionnumber] = userAns;
+          }
+          // calculating the score <--
+         
+           //showing the QUESTIONS Number function -->
+           function showquestionnum() {
+                $(".QNO").text(questionnumber+1 + " ");
+           }
+           //showing the QUESTIONS Number function <--
+         
+         
+         // ending the quiz's logical work
+         
+         // adding the functionalities to buttons starts
+         
+         $(".back").click(function(){
+              if (questionnumber<20 && questionnumber>=1) {
+                  $(".result").hide();
+                  $(".next").show();
+                  $(".skip").removeClass('disable');
+                  $("#marquee").remove();
+                  saveRadioBtnValue();
+                  clearInterval(secondSetInterval);
+                  questionnumber--;
+                  showquestionnum();
+                  showquestion();
+                  diablingButtons();
+                  if (index.pointerEvents===true) {   
+                    $(".option_list").addClass("pointerNone");
+                     $(".quiz_box").prepend(`<marquee id="marquee" class="marquee my-2" width="100%" direction="right" height="20px">
+                      You cannot select any option Now.
+                      </marquee>`)
+                      clearInterval(secondSetInterval);
+                      $(".timer_sec").text("00");
+                  }
+                  else
+                  {
+                   $(".option_list").removeClass("pointerNone");   
+                  }
+                  
+              }
+              else
+              {
+                  diablingButtons();
+              }
+         });
+         
+         
+         $(".next, .skip").click(function(){
+              if (questionnumber<19) {
+                  $("#marquee").remove(); 
+                  clearInterval(secondSetInterval); 
+                  saveRadioBtnValue();
+                  questionnumber++;
+                  showquestionnum();
+                  showquestion();
+                  diablingButtons();
+                  indexpre=randomnumarr[questionnumber];
+                  index =quiz[indexpre]
+                  if (index.pointerEvents===true) {   
+                    $(".option_list").addClass("pointerNone");
+                    $(".quiz_box").prepend(`<marquee id="marquee" class="marquee my-2" width="100%" direction="right" height="20px">
+                      You cannot select any option Now.
+                      </marquee>`)
+                      clearInterval(secondSetInterval);
+                      $(".timer_sec").text("00");
+                  }
+                  else
+                  {
+                   $(".option_list").removeClass("pointerNone");   
+                  }
+              }
+              if (questionnumber==19) {
+                  $(".skip").addClass('disable');
+                  $(".next").hide();
+                  $(".result").show();
+              }
+         });
+         
+         //    making a function for checking results -->
+         let CA=0;
+         let SA=0;
+         let WA=0;
+         function checkResults() {
+          for (let i = 0; i < randomnumarr.length; i++) {
+              let indexpre=randomnumarr[i];
+              let index =quiz[indexpre]; 
+              if (radioBtnChecked[i]==index.choices[index.correctAnswer]) {
+                  CA++;
+              }  
+              else if (radioBtnChecked[i]== " ") {
+                  SA++;
+              }
+              else
+              {
+                   WA++;
+              }      
+          }
+         }
+         
+         //    making a function for checking results <--
+         
+         // CHECKING THE PECENTAGE
+         
+         let width1=0;
+         let perc1=0;
+         function gettingPerc() {
+          perc1=(CA/20)*100;
+          perc1=Math.round(perc1);
+          width1=perc1;
+          $(".perc-line").css({
+              "width":`${width1}%`,
+              "transition": "width 1s linear"
+          });
+         }
+         
+         let width2=0;
+         let perc2=0;
+         function gettingPercTime() {
+          perc2=(totaltime/400)*100;
+          width2=perc2;
+          $(".time-line").css({
+              "width":`${width2}%`,
+              "transition": "width 1s linear"
+          });
+         }
+         // CHECKING THE PECENTAGE  
+         
+          $(".result").click(function () {
+          $(".questionbody").remove();
+          $(".resultbody").fadeIn();
+          saveRadioBtnValue();
+          clearInterval(totalSetInterval);
+          checkResults();
+          gettingPerc();
+          gettingPercTime();
+          $(".percentage").text(`${perc1}%`);
+          $(".skip-ans-given").text(SA);
+          $(".wrong-ans-given").text(WA);
+          $(".Correct-ans-given").text(CA);
+          $(".time").text(totaltime);
+          });
+         // adding the functionalities to buttons ends
+          $(".icons i").click(function () {
+              $(this).siblings().css(
+                  {
+                      "display" : "none"
+                  }, 1000);
+                  $(this).css({
+                      "color": "#007bff"
+                  });
+          });
+          $(".restart").click(function(){
+          // location.reload();
+            document.write("PLEASE RELOAD THE WEB PAGE location.reload doesnot worked in the code pen so i putted this text.");
+         });
+         });
+         
+      </script>
+   </head>
+   <body>
+      <!-- website section start -->
+      <div class="container-fluid px-0">
+         <section class="quizbody">
+            <div class="container">
+               <div class="row">
+                  <div class="col-12 d-flex text-center justify-content-center align-items-center flex-column" style="padding: 50px 0; background-color: #007bff; color: white;">
+                     <h1 class="quizh1" style="font-size: 3rem; font-weight: 700;">
+                        Quiz
+                     </h1>
+                     <h3 class="descriptionh3">
+                        Click below Button to Start the Quiz
+                     </h3>
+                  </div>
+                  <div class="col-12 button-div d-flex justify-content-center align-items-center">
+                     <div>
+                        <button class="btn" id="mainButton">
+                        Start Your Quizz
+                        <span></span><span></span><span></span><span></span>
+                        </button>
+                     </div>
+                  </div>
+                  <div class="col-12 d-flex justify-content-center align-items-center flex-column">
+                     <div class="info_box">
+                        <div class="info-title"><span>Some Rules of this Quiz</span></div>
+                        <div class="info-list">
+                           <div class="info">1. You will have only <span>20 seconds</span> per each question.</div>
+                           <div class="info">2. You can skip any question you want.</div>
+                           <div class="info">3. You can't select any option once time goes off.</div>
+                           <div class="info">4. You can't exit from the Quiz while you're playing.</div>
+                           <div class="info">5. You'll get points on the basis of your correct answers.</div>
+                           <div class="info">6. Your skipped question will be result 0 points.</div>
+                        </div>
+                        <div class="buttons">
+                           <button class="quit btn">Exit Quiz</button>
+                           <button class="continue btn">Continue</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+         <section class="questionbody">
+            <div class="container-fluid" style="background-color: #007bff;">
+               <div class="row">
+                  <div class="col-12 d-flex justify-content-center align-items-center">
+                     <div class="quiz_box">
+                        <header>
+                           <div class="title">Quiz Application</div>
+                           <div class="timer">
+                              <div class="time_left_txt">Time Left</div>
+                              <div class="timer_sec">20</div>
+                           </div>
+                           <div class="time_line"></div>
+                        </header>
+                        <section class="qasection">
+                           <div class="que_text">
+                              How old am I?
+                           </div>
+                           <div class="option_list containerr">
+                              <div class="option">
+                                 <input type="radio" name="option" id="opt1" value="opt1input">
+                                 <label for="opt1" aria-label="opt1">
+                                 <span></span>
+                                 option 1
+                                 </label>
+                              </div>
+                              <div class="option">
+                                 <input type="radio" name="option" id="opt2" value="opt1input">
+                                 <label for="opt2" aria-label="opt2">
+                                 <span></span>
+                                 option 2
+                                 </label>
+                              </div>
+                              <div class="option">
+                                 <input type="radio" name="option" id="opt3" value="opt1input">
+                                 <label for="opt3" aria-label="opt3">
+                                 <span></span>
+                                 option 3
+                                 </label>
+                              </div>
+                              <div class="option">
+                                 <input type="radio" name="option" id="opt4" value="opt1input">
+                                 <label for="opt4" aria-label="opt4">
+                                 <span></span>
+                                 option 4
+                                 </label>
+                              </div>
+                           </div>
+                        </section>
+                        <footer>
+                           <div class="total_que">
+                              <span class="QNO"></span>  of 20
+                           </div>
+                           <div class="btns">
+                              <button class="back btn">back</button>
+                              <button class="btn skip">Skip</button>
+                              <button class="btn next">Next</button>
+                              <button class="btn result">Result</button>
+                           </div>
+                        </footer>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+         <section class="resultbody">
+            <div class="container-fluid" style="background-color: #007bff;">
+               <div class="row">
+                  <div class="col-12 d-flex justify-content-center align-items-center">
+                     <div class="result_box">
+                        <header class="d-flex flex-column">
+                           <div class="title" style="
+                              margin-top: 10px;
+                              font-size: 30px;
+                              font-weight: 700;
+                              color: var(--bgprm);
+                              ">Your Result</div>
+                           <div class="time_line"></div>
+                        </header>
+                        <section class="result-showing-box">
+                           <div class="answer-info">
+                              <div class="total-ans d-flex justify-content-between">
+                                 <h3>ALL Questions</h3>
+                                 <h3 style="color: #007bff;">20</h3>
+                              </div>
+                              <div class="correct-ans d-flex justify-content-between">
+                                 <h4>Correct Answers</h4>
+                                 <h4 class="Correct-ans-given" style="color: #007bff;"></h4>
+                              </div>
+                              <div class="wrong-ans d-flex justify-content-between">
+                                 <h4>Wrong Answers</h4>
+                                 <h4 class="wrong-ans-given" style="color: #007bff;"></h4>
+                              </div>
+                              <div class="skipped-ans d-flex justify-content-between">
+                                 <h4>Skipped Answers</h4>
+                                 <h4 style="color: #007bff;" class="skip-ans-given"></h4>
+                              </div>
+                           </div>
+                           <div class="perc-result">
+                              <h3>Your Percentage is <span class="percentage" style="color: #007bff;"></span></h3>
+                              <div class="perc-line-div">
+                                 <div class="perc-line"></div>
+                              </div>
+                           </div>
+                           <div class="time-result">
+                              <h3>You completed the Quiz in <span class="time" style="color: #007bff;"></span> Seconds</h3>
+                              <div class="time-line-div">
+                                 <div class="time-line"></div>
+                              </div>
+                           </div>
+                        </section>
+                        <footer style="height: 100px;">
+                           <div class="replay-btn-icons">
+                              <div>
+                                 <p class="icons-text mb-0">
+                                    How you felt about the Quiz
+                                 </p>
+                                 <div class="icons">
+                                    <i class="far fa-surprise"></i>
+                                    <i class="far fa-smile-beam"></i>
+                                    <i class="far fa-sad-cry"></i>
+                                    <i class="far fa-meh"></i>
+                                    <i class="far fa-grin-hearts"></i>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="btns">
+                              <button class="restart btn">Restart</button>
+                           </div>
+                        </footer>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+      </div>
+   </body>
+</html>
