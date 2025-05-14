@@ -46,7 +46,7 @@
   img.fullscreen-image {
     height: 100vh;
     width: 100vw;
-    object-fit: cover; /* Show full image without cropping */
+    object-fit: contain; /* Show full image without cropping */
     display: block;
   }
 </style>
@@ -56,15 +56,15 @@
   <!-- Mobile image (standard and retina versions) -->
   <source 
     media="(max-width: 768px)" 
-    srcset="images/mainimagemobile.png 1x, images/mainimagemobile.png 2x">
+    srcset="images/mainimage2.png 1x, images/mainimage2.png 2x">
 
   <!-- Desktop image (standard and retina versions) -->
   <source 
     media="(min-width: 769px)" 
-    srcset="images/mainimage1.png 1x, images/mainimage1.png 2x">
+    srcset="images/mainimage2.png 1x, images/mainimage2.png 2x">
 
   <!-- Fallback image -->
-  <img src="images/mainimage1.png" alt="Responsive fullscreen image" class="fullscreen-image">
+  <img src="images/mainimage2.png" alt="Responsive fullscreen image" class="fullscreen-image">
 </picture>
       <audio id="audio" src="assets/speechvoice.mp3"></audio>
       <script src="js/main-light.min.ACSHASHe3fd481804126aad70e99fe060fe8dca.js"></script>
